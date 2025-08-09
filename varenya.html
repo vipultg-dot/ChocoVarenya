@@ -27,7 +27,7 @@
       />
     );
 
-    // Improved avatar that resembles the reference photos (silhouette + feel)
+    // Improved avatar resembling the reference (silhouette + feel)
     const VarenyaAvatar = () => (
       <svg viewBox="0 0 340 300" className="w-40 h-36">
         <defs>
@@ -39,36 +39,36 @@
             <stop offset="0%" stopColor="#ffd84d" />
             <stop offset="100%" stopColor="#ffb300" />
           </linearGradient>
-          <!-- pink gingham pattern -->
+          {/* pink gingham pattern */}
           <pattern id="gingham" width="16" height="16" patternUnits="userSpaceOnUse">
             <rect width="16" height="16" fill="#ffd7e8" />
             <rect width="16" height="8" y="0" fill="#ffb6cf" opacity="0.6" />
             <rect width="8" height="16" x="0" fill="#ffb6cf" opacity="0.6" />
           </pattern>
         </defs>
-        <!-- hair silhouette: shoulder-length bob with soft bangs and slight side wisps -->
+        {/* hair silhouette: shoulder-length bob with soft bangs and side wisps */}
         <path d="M35 150 C35 70, 105 30, 170 30 C235 30, 305 70, 305 150
                  C305 200, 290 225, 270 240
                  C255 210, 225 195, 170 195
                  C115 195, 85 210, 70 240
                  C50 225, 35 200, 35 150 Z"
               fill="url(#hairG)"/>
-        <!-- face -->
+        {/* face */}
         <ellipse cx="170" cy="150" rx="78" ry="68" fill="#ffd4b8"/>
-        <!-- bangs -->
+        {/* bangs */}
         <path d="M95 140 C120 110, 145 105, 170 120 C195 105, 220 110, 245 140"
               stroke="#2a1a12" strokeWidth="6" fill="none" strokeLinecap="round"/>
-        <!-- side wisps -->
+        {/* side wisps */}
         <path d="M88 155 C80 165, 85 178, 95 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
         <path d="M252 155 C260 165, 255 178, 245 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
-        <!-- eyes -->
+        {/* eyes */}
         <circle cx="145" cy="155" r="8" fill="#2b1a12" />
         <circle cx="195" cy="155" r="8" fill="#2b1a12" />
-        <!-- gentle smile -->
+        {/* gentle smile */}
         <path d="M145 178 C160 190, 180 190, 195 178" stroke="#b15c38" strokeWidth="6" fill="none" strokeLinecap="round"/>
-        <!-- neck -->
+        {/* neck */}
         <rect x="156" y="197" width="28" height="18" rx="6" fill="#ffd4b8"/>
-        <!-- dress top with yellow straps and pink gingham body -->
+        {/* dress top with yellow straps and pink gingham body */}
         <rect x="108" y="212" width="124" height="26" rx="8" fill="url(#gingham)" stroke="#ff9bbd" strokeWidth="3"/>
         <path d="M108 214 C108 196, 128 194, 142 214" fill="url(#strapG)"/>
         <path d="M232 214 C232 196, 252 194, 266 214" fill="url(#strapG)"/>
