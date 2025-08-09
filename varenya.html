@@ -1,22 +1,250 @@
-
-<!-- We'll embed React and ReactDOM from CDN -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChocoVarenya</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <meta name="description" content="A sweet little strategy game. Don't take the last chocolate!" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect x=%228%22 y=%2216%22 rx=%228%22 ry=%228%22 width=%2248%22 height=%2232%22 fill=%22%238e4e2b%22/></svg>">
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body, #root { height: 100%; }
+    body { background: #fef9c3; } /* yellow-100 */
+  </style>
 </head>
-<body class="bg-yellow-100">
+<body>
   <div id="root"></div>
-  <script type="text/babel">
-    // React code from our component
-    
-// paste the code content from textdoc here
 
+  <script type="text/babel">
+    const {useMemo, useState, useEffect} = React;
+
+    const Choco = ({ taken }) => (
+      <div
+        className={"h-9 w-9 sm:h-11 sm:w-11 rounded-lg shadow " + (taken ? "opacity-20" : "opacity-100")}
+        style={{ background: "linear-gradient(145deg, #6b3b1f 0%, #8e4e2b 40%, #5b3420 100%)", border: "2px solid #3e2213" }}
+      />
+    );
+
+    const VarenyaAvatar = () => (
+      <svg viewBox="0 0 220 180" className="w-36 h-28">
+        <defs>
+          <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#4a2c1c" />
+            <stop offset="100%" stopColor="#2f1a10" />
+          </linearGradient>
+          <linearGradient id="dress" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#ffe36a" />
+            <stop offset="100%" stopColor="#f8b400" />
+          </linearGradient>
+        </defs>
+        <path d="M20 80 Q 30 20, 110 20 Q 190 20, 200 80 Q 205 110, 200 130 Q 170 110, 110 110 Q 50 110, 20 130 Q 15 110, 20 80Z" fill="url(#hair)" />
+        <ellipse cx="110" cy="95" rx="48" ry="44" fill="#ffd7b3" />
+        <path d="M60 75 Q 78 60, 90 70" stroke="#2f1a10" strokeWidth="4" fill="none" />
+        <path d="M130 70 Q 142 60, 160 75" stroke="#2f1a10" strokeWidth="4" fill="none" />
+        <circle cx="92" cy="95" r="6" fill="#2b1a12" />
+        <circle cx="128" cy="95" r="6" fill="#2b1a12" />
+        <path d="M95 115 Q 110 125, 125 115" stroke="#b15c38" strokeWidth="5" fill="none" strokeLinecap="round" />
+        <rect x="70" y="130" width="80" height="26" rx="6" fill="url(#dress)" />
+      </svg>
+    );
+
+    function misereNimMove(heaps){
+      const alive = heaps.map((h,i)=>({i,h})).filter(x=>x.h>0);
+      const big = alive.filter(x=>x.h>1);
+      if(alive.length===0) return {row:0,take:0};
+      if(big.length===0){
+        const row = alive[0].i;
+        return {row, take:1};
+      }
+      if(big.length===1){
+        const ones = alive.length - 1;
+        const row = big[0].i;
+        const m = heaps[row];
+        if(ones % 2 === 0){
+          return {row, take: m - 1};
+        } else {
+          return {row, take: m};
+        }
+      }
+      const x = heaps.reduce((a,b)=>a^b,0);
+      for(let i=0;i<heaps.length;i++){
+        const h = heaps[i];
+        const target = h ^ x;
+        if(target < h){
+          return {row:i, take: h - target};
+        }
+      }
+      const row = alive[0].i;
+      return {row, take:1};
+    }
+
+    const YellowBackdrop = ({children}) => (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-yellow-100 via-yellow-200 to-yellow-300">
+        <div className="w-full max-w-4xl p-4 sm:p-8">
+          <div className="rounded-2xl shadow-xl p-5 sm:p-8 bg-yellow-50/70 border border-yellow-200">
+            {children}
+          </div>
+        </div>
+      </div>
+    );
+
+    function Row({ index, count, disabled, onTake }){
+      const [select, setSelect] = useState(0);
+      useEffect(()=>setSelect(0), [count]);
+      const canConfirm = !disabled && select>0 && select<=count;
+      return (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold" style={{color:"#5b3a1b"}}>Plate {index+1}</span>
+            <div className="flex items-center gap-2">
+              <button disabled={disabled || select<=0} onClick={()=>setSelect(v=>Math.max(0,v-1))}
+                className={"px-3 py-1 rounded-lg border " + (disabled ? "opacity-50" : "bg-yellow-100 hover:bg-yellow-200")}>−</button>
+              <span className="w-8 text-center font-bold" style={{color:"#5b3a1b"}}>{select}</span>
+              <button disabled={disabled || select>=count} onClick={()=>setSelect(v=>Math.min(count,v+1))}
+                className={"px-3 py-1 rounded-lg border " + (disabled ? "opacity-50" : "bg-yellow-100 hover:bg-yellow-200")}>+</button>
+              <button disabled={!canConfirm} onClick={()=>onTake(select)}
+                className={"ml-2 px-4 py-1.5 rounded-xl font-semibold shadow " + (canConfirm ? "bg-yellow-400 hover:bg-yellow-500" : "opacity-40 bg-yellow-300")}
+                style={{color:"#5b3a1b"}}>Take</button>
+            </div>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {Array.from({length: count}).map((_,i)=>(<Choco key={i}/>))}
+          </div>
+        </div>
+      );
+    }
+
+    function App(){
+      const [screen, setScreen] = useState("intro"); // intro | game | over
+      const [player, setPlayer] = useState("");
+      const [heaps, setHeaps] = useState([3,5,7]);
+      const [turn, setTurn] = useState("you"); // you | ai
+      const [message, setMessage] = useState("Pick chocolates from ONE plate.");
+      const total = useMemo(()=>heaps.reduce((a,b)=>a+b,0), [heaps]);
+
+      const resetGame = () => {
+        setHeaps([3,5,7]);
+        setTurn("you");
+        setScreen("game");
+        setMessage(`${player || "Player"}, it's your turn!`);
+      };
+
+      const onTake = (row, take) => {
+        if (screen !== "game" || turn !== "you") return;
+        if (take <= 0 || take > heaps[row]) return;
+        const next = [...heaps];
+        next[row] -= take;
+        const totalAfter = next.reduce((a,b)=>a+b,0);
+
+        if (totalAfter === 0){
+          setHeaps(next);
+          setScreen("over");
+          setMessage(`Oh no! ${player || "You"} took the last chocolate and loses. Varenya wins!`);
+          return;
+        }
+
+        setHeaps(next);
+        setTurn("ai");
+        setMessage("Varenya is thinking…");
+
+        setTimeout(()=>{
+          const {row:r, take:k} = misereNimMove(next);
+          const afterAI = [...next];
+          afterAI[r] -= Math.min(k, afterAI[r]);
+          const totalAI = afterAI.reduce((a,b)=>a+b,0);
+          if (totalAI === 0){
+            setHeaps(afterAI);
+            setScreen("over");
+            setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
+            return;
+          }
+          setHeaps(afterAI);
+          setTurn("you");
+          setMessage(`${player || "Player"}, it's your turn!`);
+        }, 500);
+      };
+
+      const Intro = (
+        <YellowBackdrop>
+          <div className="flex flex-col gap-6 sm:gap-8 items-center text-center">
+            <div className="flex items-center gap-4">
+              <VarenyaAvatar />
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-extrabold" style={{color:"#5b3a1b"}}>
+                  Choco<span className="text-yellow-600">Varenya</span>
+                </h1>
+                <p style={{color:"#6b3b1f"}}>A sweet little strategy game</p>
+              </div>
+            </div>
+            <label className="text-lg sm:text-xl font-medium" style={{color:"#5b3a1b"}}>Enter your name</label>
+            <input value={player} onChange={(e)=>setPlayer(e.target.value)} placeholder="Type your name"
+              className="w-full max-w-md px-4 py-3 rounded-2xl border focus:outline-none focus:ring-4 text-lg bg-yellow-50/80 border-yellow-300 focus:ring-yellow-300" />
+            <button onClick={()=>{ setScreen("game"); setMessage(`${player || "Player"}, it's your turn!`);}}
+              className="px-8 py-3 rounded-2xl text-xl font-bold shadow active:scale-95"
+              style={{background:"linear-gradient(180deg, #ffd84d 0%, #ffb300 100%)", color:"#5b3a1b"}}>Play</button>
+          </div>
+        </YellowBackdrop>
+      );
+
+      const Game = (
+        <YellowBackdrop>
+          <div className="flex flex-col gap-4 sm:gap-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <VarenyaAvatar />
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold" style={{color:"#5b3a1b"}}>
+                    Choco<span className="text-yellow-600">Varenya</span>
+                  </h2>
+                  <p className="text-sm" style={{color:"#6b3b1f"}}>
+                    Welcome {player || "Friend"}! Don’t take the last chocolate.
+                  </p>
+                </div>
+              </div>
+              <button onClick={resetGame} className="rounded-xl px-4 py-2 border border-yellow-400 bg-yellow-100 hover:bg-yellow-200 text-sm">
+                Reset
+              </button>
+            </div>
+
+            <div className="rounded-xl p-4 sm:p-6 bg-yellow-100/70 border border-yellow-200">
+              <p className="mb-4 font-semibold" style={{color:"#5b3a1b"}}>{message}</p>
+              <div className="grid gap-6">
+                {[0,1,2].map(r => (
+                  <Row key={r} index={r} count={heaps[r]} disabled={turn!=="you" || "game"!==screen} onTake={(k)=>onTake(r,k)} />
+                ))}
+              </div>
+              <div className="mt-4 text-sm" style={{color:"#6b3b1f"}}>
+                Remaining chocolates: <b>{total}</b>
+              </div>
+            </div>
+          </div>
+        </YellowBackdrop>
+      );
+
+      const Over = (
+        <YellowBackdrop>
+          <div className="flex flex-col items-center gap-6 text-center">
+            <VarenyaAvatar />
+            <h2 className="text-3xl font-extrabold" style={{color:"#5b3a1b"}}>Game Over</h2>
+            <p className="text-lg" style={{color:"#6b3b1f"}}>{message}</p>
+            <div className="flex gap-3">
+              <button onClick={resetGame} className="px-6 py-3 rounded-2xl text-lg font-bold shadow"
+                style={{background:"linear-gradient(180deg, #ffd84d 0%, #ffb300 100%)", color:"#5b3a1b"}}>Play Again</button>
+              <button onClick={()=>{ setScreen("intro"); setHeaps([3,5,7]); setTurn("you"); }}
+                className="px-6 py-3 rounded-2xl text-lg font-bold border border-yellow-400 bg-yellow-100">Home</button>
+            </div>
+          </div>
+        </YellowBackdrop>
+      );
+
+      return screen==="intro" ? Intro : screen==="game" ? Game : Over;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
   </script>
 </body>
 </html>
