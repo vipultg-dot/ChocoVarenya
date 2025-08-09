@@ -30,42 +30,62 @@
       />
     );
 
-    // Avatar similar to our agreed silhouette (yellow straps + pink gingham)
+    // NEW avatar — closer to your daughter's silhouette (side-swept bangs, rounded cheeks, shoulder-length hair), yellow straps + pink gingham.
     const VarenyaAvatar = () => (
-      <svg viewBox="0 0 340 300" className="w-40 h-36">
+      <svg viewBox="0 0 380 300" className="w-44 h-40">
         <defs>
           <linearGradient id="hairG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#3b2417" />
-            <stop offset="100%" stopColor="#1f140e" />
+            <stop offset="0%" stopColor="#3a271b" />
+            <stop offset="100%" stopColor="#23170f" />
           </linearGradient>
           <linearGradient id="strapG" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#ffd84d" />
             <stop offset="100%" stopColor="#ffb300" />
           </linearGradient>
           <pattern id="gingham" width="16" height="16" patternUnits="userSpaceOnUse">
-            <rect width="16" height="16" fill="#ffd7e8" />
-            <rect width="16" height="8" y="0" fill="#ffb6cf" opacity="0.6" />
-            <rect width="8" height="16" x="0" fill="#ffb6cf" opacity="0.6" />
+            <rect width="16" height="16" fill="#ffd8e9" />
+            <rect width="16" height="8" y="0" fill="#ffb6cf" opacity="0.55" />
+            <rect width="8" height="16" x="0" fill="#ffb6cf" opacity="0.55" />
           </pattern>
         </defs>
-        <path d="M35 150 C35 70, 105 30, 170 30 C235 30, 305 70, 305 150
-                 C305 200, 290 225, 270 240
-                 C255 210, 225 195, 170 195
-                 C115 195, 85 210, 70 240
-                 C50 225, 35 200, 35 150 Z"
+
+        {/* Outer hair shape */}
+        <path d="M30 150
+                 C30 70, 115 25, 190 25
+                 C265 25, 350 70, 350 150
+                 C350 210, 320 238, 298 246
+                 C285 214, 245 200, 190 200
+                 C135 200, 95 214, 82 246
+                 C60 238, 30 210, 30 150 Z"
               fill="url(#hairG)"/>
-        <ellipse cx="170" cy="150" rx="78" ry="68" fill="#ffd4b8"/>
-        <path d="M95 140 C120 110, 145 105, 170 120 C195 105, 220 110, 245 140"
-              stroke="#2a1a12" strokeWidth="6" fill="none" strokeLinecap="round"/>
-        <path d="M88 155 C80 165, 85 178, 95 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
-        <path d="M252 155 C260 165, 255 178, 245 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
-        <circle cx="145" cy="155" r="8" fill="#2b1a12" />
-        <circle cx="195" cy="155" r="8" fill="#2b1a12" />
-        <path d="M145 178 C160 190, 180 190, 195 178" stroke="#b15c38" strokeWidth="6" fill="none" strokeLinecap="round"/>
-        <rect x="156" y="197" width="28" height="18" rx="6" fill="#ffd4b8"/>
-        <rect x="108" y="212" width="124" height="26" rx="8" fill="url(#gingham)" stroke="#ff9bbd" strokeWidth="3"/>
-        <path d="M108 214 C108 196, 128 194, 142 214" fill="url(#strapG)"/>
-        <path d="M232 214 C232 196, 252 194, 266 214" fill="url(#strapG)"/>
+        {/* Face */}
+        <ellipse cx="190" cy="150" rx="84" ry="72" fill="#ffd6bd"/>
+        {/* Side-swept bangs (right to left) */}
+        <path d="M115 138
+                 C140 108, 168 100, 190 112
+                 C212 102, 245 110, 265 136"
+              stroke="#2a1a12" strokeWidth="7" fill="none" strokeLinecap="round"/>
+        {/* Subtle wisps */}
+        <path d="M110 160 C98 172, 106 184, 118 186" stroke="#2a1a12" strokeWidth="5" fill="none"/>
+        <path d="M270 160 C282 172, 274 184, 262 186" stroke="#2a1a12" strokeWidth="5" fill="none"/>
+
+        {/* Eyes with tiny highlight */}
+        <circle cx="162" cy="156" r="9" fill="#2b1a12"/>
+        <circle cx="218" cy="156" r="9" fill="#2b1a12"/>
+        <circle cx="159" cy="153" r="2" fill="#fff" opacity="0.7"/>
+        <circle cx="215" cy="153" r="2" fill="#fff" opacity="0.7"/>
+
+        {/* Smile */}
+        <path d="M160 182 C176 196, 204 196, 220 182" stroke="#b5643c" strokeWidth="6" fill="none" strokeLinecap="round"/>
+
+        {/* Neck */}
+        <rect x="176" y="205" width="28" height="20" rx="8" fill="#ffd6bd"/>
+
+        {/* Dress top */}
+        <rect x="120" y="220" width="140" height="32" rx="10" fill="url(#gingham)" stroke="#ff9cc1" strokeWidth="3"/>
+        {/* Yellow straps */}
+        <path d="M120 222 C120 200, 144 198, 160 222" fill="url(#strapG)"/>
+        <path d="M260 222 C260 200, 284 198, 300 222" fill="url(#strapG)"/>
       </svg>
     );
 
@@ -152,7 +172,7 @@
         setMessage(`${player || "Player"}, it's your turn!`);
       };
 
-      const animateAiMove = (state, row, take) => {
+      const animateAiMove = (row, take) => {
         setAiHighlight(row);
         let remaining = take;
         const step = () => {
@@ -166,23 +186,13 @@
             setTimeout(step, speed);
           } else {
             setAiHighlight(-1);
-            const totalAI = state.reduce((a,b)=>a+b,0) - take; // approximate for end check below
-            const t = (heaps.reduce((a,b)=>a+b,0)); // fallback
-            const afterTotal = t - take; // rough; final check after state settles
+            const leftSoon = () => {
+              const sum = document.querySelectorAll('div[data-left]').length; // force reflow
+            };
             setTimeout(()=>{
-              const sum = document.querySelectorAll('[data-choco]').length; // not used; ensure render flushed
-              const now = (prev => heaps).toString();
-              const totalNow = (prev => prev); // placeholder
-              // finalize turn
-              const totalLeft = document.querySelectorAll('.h-9, .sm\\:h-11').length; // not used
-              const left = heaps.reduce((a,b)=>a+b,0);
-              if (left === 0){
-                setScreen("over");
-                setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
-              } else {
-                setTurn("you");
-                setMessage(`${player || "Player"}, it's your turn!`);
-              }
+              const left = (s => s)(0); // noop
+              setTurn("you");
+              setMessage(`${player || "Player"}, it's your turn!`);
             }, speed);
           }
         };
@@ -209,8 +219,19 @@
 
         setTimeout(()=>{
           const {row:r, take:k} = misereNimMove(next);
-          // animate one-by-one removal
-          animateAiMove(next, r, Math.min(k, next[r]));
+          const takeCount = Math.min(k, next[r]);
+          // if AI would take all remaining -> end after animation completes
+          let temp = [...next];
+          temp[r] -= takeCount;
+          const totalAI = temp.reduce((a,b)=>a+b,0);
+          animateAiMove(r, takeCount);
+          if (totalAI === 0){
+            // Slight delay to show final removal then declare result
+            setTimeout(()=>{
+              setScreen("over");
+              setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
+            }, takeCount * speed + 200);
+          }
         }, 600); // thinking delay
       };
 
@@ -222,7 +243,7 @@
               <h1 className="text-4xl sm:text-5xl font-extrabold title-brown">
                 Choco<span className="text-yellow-700">Varenya</span>
               </h1>
-              <p className="text-brown-700" style={{color:"#6b3b1f"}}>A sweet little strategy game</p>
+              <p className="text-brown-700" style={{color:"#6b3a1f"}}>A sweet little strategy game</p>
             </div>
           </div>
 
@@ -243,10 +264,6 @@
                 <li>On your turn, pick <b>any number</b> from <b>one</b> plate.</li>
                 <li><b>Last chocolate loses!</b></li>
               </ul>
-              <details className="mt-3">
-                <summary className="cursor-pointer title-brown font-semibold">Pro tip</summary>
-                <p className="text-sm mt-1" style={{color:"#6b3b1f"}}>Try leaving two rows equal, or patterns like <b>1-2-3</b> or <b>1-4-5</b> for your opponent.</p>
-              </details>
             </div>
           </div>
         </YellowShell>
@@ -295,8 +312,6 @@
                 <li>Turns alternate: You → Varenya → You …</li>
                 <li>The player who takes the <b>last chocolate loses</b>.</li>
               </ol>
-              <h4 className="mt-4 font-bold title-brown">Winning Hint</h4>
-              <p className="text-sm" style={{color:"#6b3b1f"}}>Try to leave two equal rows, or patterns like <b>1-2-3</b> / <b>1-4-5</b>.</p>
             </aside>
           </div>
         </YellowShell>
@@ -318,12 +333,11 @@
         </YellowShell>
       );
 
-      // track heap changes to detect end after animations
+      // End detection
       useEffect(()=>{
         if(screen!=="game") return;
         const t = heaps.reduce((a,b)=>a+b,0);
         if(t===0){
-          // whose turn is it now? If it's your turn, AI took last and loses.
           if(turn==="you"){
             setScreen("over");
             setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
