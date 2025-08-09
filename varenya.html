@@ -11,7 +11,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html, body, #root { height: 100%; }
-    body { background: #fef9c3; } /* yellow-100 */
+    body { background: linear-gradient(180deg, #fef08a 0%, #fde68a 60%, #facc15 100%); }
+    .card { background: #fffbea; border: 1px solid #fde68a; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .plate { background: #fff9c4; border: 1px solid #fde68a; }
+    .title-brown { color: #5b3a1b; }
   </style>
 </head>
 <body>
@@ -20,14 +23,14 @@
   <script type="text/babel">
     const {useMemo, useState, useEffect} = React;
 
-    const Choco = ({ taken }) => (
+    const Choco = ({ fade }) => (
       <div
-        className={"h-9 w-9 sm:h-11 sm:w-11 rounded-lg shadow " + (taken ? "opacity-20" : "opacity-100")}
+        className={"h-9 w-9 sm:h-11 sm:w-11 rounded-lg shadow transition-opacity duration-200 " + (fade ? "opacity-20" : "opacity-100")}
         style={{ background: "linear-gradient(145deg, #6b3b1f 0%, #8e4e2b 40%, #5b3420 100%)", border: "2px solid #3e2213" }}
       />
     );
 
-    // Improved avatar resembling the reference (silhouette + feel)
+    // Avatar similar to our agreed silhouette (yellow straps + pink gingham)
     const VarenyaAvatar = () => (
       <svg viewBox="0 0 340 300" className="w-40 h-36">
         <defs>
@@ -39,36 +42,27 @@
             <stop offset="0%" stopColor="#ffd84d" />
             <stop offset="100%" stopColor="#ffb300" />
           </linearGradient>
-          {/* pink gingham pattern */}
           <pattern id="gingham" width="16" height="16" patternUnits="userSpaceOnUse">
             <rect width="16" height="16" fill="#ffd7e8" />
             <rect width="16" height="8" y="0" fill="#ffb6cf" opacity="0.6" />
             <rect width="8" height="16" x="0" fill="#ffb6cf" opacity="0.6" />
           </pattern>
         </defs>
-        {/* hair silhouette: shoulder-length bob with soft bangs and side wisps */}
         <path d="M35 150 C35 70, 105 30, 170 30 C235 30, 305 70, 305 150
                  C305 200, 290 225, 270 240
                  C255 210, 225 195, 170 195
                  C115 195, 85 210, 70 240
                  C50 225, 35 200, 35 150 Z"
               fill="url(#hairG)"/>
-        {/* face */}
         <ellipse cx="170" cy="150" rx="78" ry="68" fill="#ffd4b8"/>
-        {/* bangs */}
         <path d="M95 140 C120 110, 145 105, 170 120 C195 105, 220 110, 245 140"
               stroke="#2a1a12" strokeWidth="6" fill="none" strokeLinecap="round"/>
-        {/* side wisps */}
         <path d="M88 155 C80 165, 85 178, 95 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
         <path d="M252 155 C260 165, 255 178, 245 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
-        {/* eyes */}
         <circle cx="145" cy="155" r="8" fill="#2b1a12" />
         <circle cx="195" cy="155" r="8" fill="#2b1a12" />
-        {/* gentle smile */}
         <path d="M145 178 C160 190, 180 190, 195 178" stroke="#b15c38" strokeWidth="6" fill="none" strokeLinecap="round"/>
-        {/* neck */}
         <rect x="156" y="197" width="28" height="18" rx="6" fill="#ffd4b8"/>
-        {/* dress top with yellow straps and pink gingham body */}
         <rect x="108" y="212" width="124" height="26" rx="8" fill="url(#gingham)" stroke="#ff9bbd" strokeWidth="3"/>
         <path d="M108 214 C108 196, 128 194, 142 214" fill="url(#strapG)"/>
         <path d="M232 214 C232 196, 252 194, 266 214" fill="url(#strapG)"/>
@@ -105,28 +99,28 @@
       return {row, take:1};
     }
 
-    const YellowBackdrop = ({children}) => (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-yellow-100 via-yellow-200 to-yellow-300">
-        <div className="w-full max-w-4xl p-4 sm:p-8">
-          <div className="rounded-2xl shadow-xl p-5 sm:p-8 bg-yellow-50/70 border border-yellow-200">
+    const YellowShell = ({children}) => (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="w-full max-w-6xl p-4 sm:p-8">
+          <div className="rounded-2xl card p-5 sm:p-6">
             {children}
           </div>
         </div>
       </div>
     );
 
-    function Row({ index, count, disabled, onTake }){
+    function Row({ index, count, disabled, onTake, highlight }){
       const [select, setSelect] = useState(0);
       useEffect(()=>setSelect(0), [count]);
       const canConfirm = !disabled && select>0 && select<=count;
       return (
-        <div className="flex flex-col gap-2">
+        <div className={"flex flex-col gap-2 rounded-xl p-3 plate " + (highlight ? "ring-2 ring-yellow-400" : "")}>
           <div className="flex items-center justify-between">
-            <span className="font-semibold" style={{color:"#5b3a1b"}}>Plate {index+1}</span>
+            <span className="font-semibold title-brown">Plate {index+1}</span>
             <div className="flex items-center gap-2">
               <button disabled={disabled || select<=0} onClick={()=>setSelect(v=>Math.max(0,v-1))}
                 className={"px-3 py-1 rounded-lg border " + (disabled ? "opacity-50" : "bg-yellow-100 hover:bg-yellow-200")}>−</button>
-              <span className="w-8 text-center font-bold" style={{color:"#5b3a1b"}}>{select}</span>
+              <span className="w-8 text-center font-bold title-brown">{select}</span>
               <button disabled={disabled || select>=count} onClick={()=>setSelect(v=>Math.min(count,v+1))}
                 className={"px-3 py-1 rounded-lg border " + (disabled ? "opacity-50" : "bg-yellow-100 hover:bg-yellow-200")}>+</button>
               <button disabled={!canConfirm} onClick={()=>onTake(select)}
@@ -147,6 +141,8 @@
       const [heaps, setHeaps] = useState([3,5,7]);
       const [turn, setTurn] = useState("you"); // you | ai
       const [message, setMessage] = useState("Pick chocolates from ONE plate.");
+      const [aiHighlight, setAiHighlight] = useState(-1);
+      const [speed, setSpeed] = useState(280); // ms per chocolate animation
       const total = useMemo(()=>heaps.reduce((a,b)=>a+b,0), [heaps]);
 
       const resetGame = () => {
@@ -154,6 +150,43 @@
         setTurn("you");
         setScreen("game");
         setMessage(`${player || "Player"}, it's your turn!`);
+      };
+
+      const animateAiMove = (state, row, take) => {
+        setAiHighlight(row);
+        let remaining = take;
+        const step = () => {
+          setHeaps(prev => {
+            const next = [...prev];
+            if (next[row] > 0) next[row] -= 1;
+            return next;
+          });
+          remaining -= 1;
+          if (remaining > 0){
+            setTimeout(step, speed);
+          } else {
+            setAiHighlight(-1);
+            const totalAI = state.reduce((a,b)=>a+b,0) - take; // approximate for end check below
+            const t = (heaps.reduce((a,b)=>a+b,0)); // fallback
+            const afterTotal = t - take; // rough; final check after state settles
+            setTimeout(()=>{
+              const sum = document.querySelectorAll('[data-choco]').length; // not used; ensure render flushed
+              const now = (prev => heaps).toString();
+              const totalNow = (prev => prev); // placeholder
+              // finalize turn
+              const totalLeft = document.querySelectorAll('.h-9, .sm\\:h-11').length; // not used
+              const left = heaps.reduce((a,b)=>a+b,0);
+              if (left === 0){
+                setScreen("over");
+                setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
+              } else {
+                setTurn("you");
+                setMessage(`${player || "Player"}, it's your turn!`);
+              }
+            }, speed);
+          }
+        };
+        setTimeout(step, speed);
       };
 
       const onTake = (row, take) => {
@@ -176,83 +209,104 @@
 
         setTimeout(()=>{
           const {row:r, take:k} = misereNimMove(next);
-          const afterAI = [...next];
-          afterAI[r] -= Math.min(k, afterAI[r]);
-          const totalAI = afterAI.reduce((a,b)=>a+b,0);
-          if (totalAI === 0){
-            setHeaps(afterAI);
-            setScreen("over");
-            setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
-            return;
-          }
-          setHeaps(afterAI);
-          setTurn("you");
-          setMessage(`${player || "Player"}, it's your turn!`);
-        }, 500);
+          // animate one-by-one removal
+          animateAiMove(next, r, Math.min(k, next[r]));
+        }, 600); // thinking delay
       };
 
       const Intro = (
-        <YellowBackdrop>
-          <div className="flex flex-col gap-6 sm:gap-8 items-center text-center">
-            <div className="flex items-center gap-4">
-              <VarenyaAvatar />
-              <div>
-                <h1 className="text-4xl sm:text-5xl font-extrabold" style={{color:"#5b3a1b"}}>
-                  Choco<span className="text-yellow-600">Varenya</span>
-                </h1>
-                <p style={{color:"#6b3b1f"}}>A sweet little strategy game</p>
-              </div>
+        <YellowShell>
+          <div className="flex items-center gap-4 mb-4">
+            <VarenyaAvatar />
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-extrabold title-brown">
+                Choco<span className="text-yellow-700">Varenya</span>
+              </h1>
+              <p className="text-brown-700" style={{color:"#6b3b1f"}}>A sweet little strategy game</p>
             </div>
-            <label className="text-lg sm:text-xl font-medium" style={{color:"#5b3a1b"}}>Enter your name</label>
-            <input value={player} onChange={(e)=>setPlayer(e.target.value)} placeholder="Type your name"
-              className="w-full max-w-md px-4 py-3 rounded-2xl border focus:outline-none focus:ring-4 text-lg bg-yellow-50/80 border-yellow-300 focus:ring-yellow-300" />
-            <button onClick={()=>{ setScreen("game"); setMessage(`${player || "Player"}, it's your turn!`);}}
-              className="px-8 py-3 rounded-2xl text-xl font-bold shadow active:scale-95"
-              style={{background:"linear-gradient(180deg, #ffd84d 0%, #ffb300 100%)", color:"#5b3a1b"}}>Play</button>
           </div>
-        </YellowBackdrop>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="plate rounded-2xl p-6 flex flex-col items-center text-center">
+              <label className="text-lg sm:text-xl font-medium title-brown mb-2">Enter your name</label>
+              <input value={player} onChange={(e)=>setPlayer(e.target.value)} placeholder="Type your name"
+                className="w-full max-w-md px-4 py-3 rounded-2xl border focus:outline-none focus:ring-4 text-lg bg-yellow-50/80 border-yellow-300 focus:ring-yellow-300" />
+              <button onClick={()=>{ setScreen("game"); setMessage(`${player || "Player"}, it's your turn!`);}}
+                className="mt-4 px-8 py-3 rounded-2xl text-xl font-bold shadow active:scale-95"
+                style={{background:"linear-gradient(180deg, #ffd84d 0%, #ffb300 100%)", color:"#5b3a1b"}}>Play</button>
+            </div>
+            <div className="plate rounded-2xl p-6">
+              <h3 className="font-bold title-brown mb-2">How to play</h3>
+              <ul className="list-disc ml-5 space-y-1 text-sm" style={{color:"#5b3a1b"}}>
+                <li>There are 3 plates with <b>3, 5, 7</b> chocolates.</li>
+                <li>You and Varenya take turns.</li>
+                <li>On your turn, pick <b>any number</b> from <b>one</b> plate.</li>
+                <li><b>Last chocolate loses!</b></li>
+              </ul>
+              <details className="mt-3">
+                <summary className="cursor-pointer title-brown font-semibold">Pro tip</summary>
+                <p className="text-sm mt-1" style={{color:"#6b3b1f"}}>Try leaving two rows equal, or patterns like <b>1-2-3</b> or <b>1-4-5</b> for your opponent.</p>
+              </details>
+            </div>
+          </div>
+        </YellowShell>
       );
 
       const Game = (
-        <YellowBackdrop>
-          <div className="flex flex-col gap-4 sm:gap-6">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <VarenyaAvatar />
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold" style={{color:"#5b3a1b"}}>
-                    Choco<span className="text-yellow-600">Varenya</span>
-                  </h2>
-                  <p className="text-sm" style={{color:"#6b3b1f"}}>
-                    Welcome {player || "Friend"}! Don’t take the last chocolate.
-                  </p>
-                </div>
+        <YellowShell>
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <VarenyaAvatar />
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold title-brown">
+                  Choco<span className="text-yellow-700">Varenya</span>
+                </h2>
+                <p className="text-sm" style={{color:"#6b3b1f"}}>
+                  Welcome {player || "Friend"}! Don’t take the last chocolate.
+                </p>
               </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm title-brown">AI speed</label>
+              <input type="range" min="120" max="600" value={speed} onChange={(e)=>setSpeed(parseInt(e.target.value))}/>
               <button onClick={resetGame} className="rounded-xl px-4 py-2 border border-yellow-400 bg-yellow-100 hover:bg-yellow-200 text-sm">
                 Reset
               </button>
             </div>
+          </div>
 
-            <div className="rounded-xl p-4 sm:p-6 bg-yellow-100/70 border border-yellow-200">
-              <p className="mb-4 font-semibold" style={{color:"#5b3a1b"}}>{message}</p>
-              <div className="grid gap-6">
+          <div className="grid md:grid-cols-[2fr_1fr] gap-6">
+            <div className="rounded-2xl p-4 sm:p-6 plate">
+              <p className="mb-4 font-semibold title-brown">{message}</p>
+              <div className="grid gap-4">
                 {[0,1,2].map(r => (
-                  <Row key={r} index={r} count={heaps[r]} disabled={turn!=="you" || "game"!==screen} onTake={(k)=>onTake(r,k)} />
+                  <Row key={r} index={r} count={heaps[r]} disabled={turn!=="you" || "game"!==screen} onTake={(k)=>onTake(r,k)} highlight={aiHighlight===r} />
                 ))}
               </div>
               <div className="mt-4 text-sm" style={{color:"#6b3b1f"}}>
                 Remaining chocolates: <b>{total}</b>
               </div>
             </div>
+
+            <aside className="rounded-2xl p-4 sm:p-6 plate">
+              <h3 className="font-bold title-brown mb-2">Rules</h3>
+              <ol className="list-decimal ml-5 space-y-1 text-sm" style={{color:"#5b3a1b"}}>
+                <li>Pick any number from exactly one plate.</li>
+                <li>Turns alternate: You → Varenya → You …</li>
+                <li>The player who takes the <b>last chocolate loses</b>.</li>
+              </ol>
+              <h4 className="mt-4 font-bold title-brown">Winning Hint</h4>
+              <p className="text-sm" style={{color:"#6b3b1f"}}>Try to leave two equal rows, or patterns like <b>1-2-3</b> / <b>1-4-5</b>.</p>
+            </aside>
           </div>
-        </YellowBackdrop>
+        </YellowShell>
       );
 
       const Over = (
-        <YellowBackdrop>
+        <YellowShell>
           <div className="flex flex-col items-center gap-6 text-center">
             <VarenyaAvatar />
-            <h2 className="text-3xl font-extrabold" style={{color:"#5b3a1b"}}>Game Over</h2>
+            <h2 className="text-3xl font-extrabold title-brown">Game Over</h2>
             <p className="text-lg" style={{color:"#6b3b1f"}}>{message}</p>
             <div className="flex gap-3">
               <button onClick={resetGame} className="px-6 py-3 rounded-2xl text-lg font-bold shadow"
@@ -261,8 +315,24 @@
                 className="px-6 py-3 rounded-2xl text-lg font-bold border border-yellow-400 bg-yellow-100">Home</button>
             </div>
           </div>
-        </YellowBackdrop>
+        </YellowShell>
       );
+
+      // track heap changes to detect end after animations
+      useEffect(()=>{
+        if(screen!=="game") return;
+        const t = heaps.reduce((a,b)=>a+b,0);
+        if(t===0){
+          // whose turn is it now? If it's your turn, AI took last and loses.
+          if(turn==="you"){
+            setScreen("over");
+            setMessage(`Yay! Varenya took the last chocolate and loses. ${player || "You"} win!`);
+          } else {
+            setScreen("over");
+            setMessage(`Oh no! ${player || "You"} took the last chocolate and loses. Varenya wins!`);
+          }
+        }
+      }, [heaps]);
 
       return screen==="intro" ? Intro : screen==="game" ? Game : Over;
     }
