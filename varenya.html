@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChocoVarenya</title>
   <meta name="description" content="A sweet little strategy game. Don't take the last chocolate!" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect x=%228%22 y=%2216%22 rx=%228%22 ry=%228%22 width=%2248%22 height=%2232%22 fill=%22%238e4e2b%22/></svg>">
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -28,26 +27,51 @@
       />
     );
 
+    // Improved avatar that resembles the reference photos (silhouette + feel)
     const VarenyaAvatar = () => (
-      <svg viewBox="0 0 220 180" className="w-36 h-28">
+      <svg viewBox="0 0 340 300" className="w-40 h-36">
         <defs>
-          <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#4a2c1c" />
-            <stop offset="100%" stopColor="#2f1a10" />
+          <linearGradient id="hairG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#3b2417" />
+            <stop offset="100%" stopColor="#1f140e" />
           </linearGradient>
-          <linearGradient id="dress" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#ffe36a" />
-            <stop offset="100%" stopColor="#f8b400" />
+          <linearGradient id="strapG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#ffd84d" />
+            <stop offset="100%" stopColor="#ffb300" />
           </linearGradient>
+          <!-- pink gingham pattern -->
+          <pattern id="gingham" width="16" height="16" patternUnits="userSpaceOnUse">
+            <rect width="16" height="16" fill="#ffd7e8" />
+            <rect width="16" height="8" y="0" fill="#ffb6cf" opacity="0.6" />
+            <rect width="8" height="16" x="0" fill="#ffb6cf" opacity="0.6" />
+          </pattern>
         </defs>
-        <path d="M20 80 Q 30 20, 110 20 Q 190 20, 200 80 Q 205 110, 200 130 Q 170 110, 110 110 Q 50 110, 20 130 Q 15 110, 20 80Z" fill="url(#hair)" />
-        <ellipse cx="110" cy="95" rx="48" ry="44" fill="#ffd7b3" />
-        <path d="M60 75 Q 78 60, 90 70" stroke="#2f1a10" strokeWidth="4" fill="none" />
-        <path d="M130 70 Q 142 60, 160 75" stroke="#2f1a10" strokeWidth="4" fill="none" />
-        <circle cx="92" cy="95" r="6" fill="#2b1a12" />
-        <circle cx="128" cy="95" r="6" fill="#2b1a12" />
-        <path d="M95 115 Q 110 125, 125 115" stroke="#b15c38" strokeWidth="5" fill="none" strokeLinecap="round" />
-        <rect x="70" y="130" width="80" height="26" rx="6" fill="url(#dress)" />
+        <!-- hair silhouette: shoulder-length bob with soft bangs and slight side wisps -->
+        <path d="M35 150 C35 70, 105 30, 170 30 C235 30, 305 70, 305 150
+                 C305 200, 290 225, 270 240
+                 C255 210, 225 195, 170 195
+                 C115 195, 85 210, 70 240
+                 C50 225, 35 200, 35 150 Z"
+              fill="url(#hairG)"/>
+        <!-- face -->
+        <ellipse cx="170" cy="150" rx="78" ry="68" fill="#ffd4b8"/>
+        <!-- bangs -->
+        <path d="M95 140 C120 110, 145 105, 170 120 C195 105, 220 110, 245 140"
+              stroke="#2a1a12" strokeWidth="6" fill="none" strokeLinecap="round"/>
+        <!-- side wisps -->
+        <path d="M88 155 C80 165, 85 178, 95 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
+        <path d="M252 155 C260 165, 255 178, 245 182" stroke="#2a1a12" strokeWidth="5" fill="none" />
+        <!-- eyes -->
+        <circle cx="145" cy="155" r="8" fill="#2b1a12" />
+        <circle cx="195" cy="155" r="8" fill="#2b1a12" />
+        <!-- gentle smile -->
+        <path d="M145 178 C160 190, 180 190, 195 178" stroke="#b15c38" strokeWidth="6" fill="none" strokeLinecap="round"/>
+        <!-- neck -->
+        <rect x="156" y="197" width="28" height="18" rx="6" fill="#ffd4b8"/>
+        <!-- dress top with yellow straps and pink gingham body -->
+        <rect x="108" y="212" width="124" height="26" rx="8" fill="url(#gingham)" stroke="#ff9bbd" strokeWidth="3"/>
+        <path d="M108 214 C108 196, 128 194, 142 214" fill="url(#strapG)"/>
+        <path d="M232 214 C232 196, 252 194, 266 214" fill="url(#strapG)"/>
       </svg>
     );
 
